@@ -1,31 +1,36 @@
-require('colors');
-const moment = require('moment');
+import colors from 'colors';
+import moment from 'moment';
+
+colors;
 
 class Logger {
-    constructor(debug) {
+    isDebug: boolean;
+    log: Function;
+
+    constructor(debug: boolean) {
         this.isDebug = debug;
         this.log = console.log;
     }
 
-    info(message) {
+    info(message: string) {
         this.log(`${moment().format('MM/DD/YYYY hh:mm:ss a').toUpperCase().bold}: ${message}`.blue);
     }
 
-    debug(message) {
+    debug(message: string) {
         this.isDebug && this.log(`${moment().format('MM/DD/YYYY hh:mm:ss a').toUpperCase().bold}: ${message}`);
     }
 
-    severe(message) {
+    severe(message: string) {
         throw new Error(`${moment().format('MM/DD/YYYY hh:mm:ss a').toUpperCase().bold}: ${message}`.red);
     }
 
-    warn(message) {
+    warn(message: string) {
         this.log(`${moment().format('MM/DD/YYYY hh:mm:ss a').toUpperCase().bold}: ${message}`.yellow);
     }
 
-    success(message) {
+    success(message: string) {
         this.log(`${moment().format('MM/DD/YYYY hh:mm:ss a').toUpperCase().bold}: ${message}`.green);
     }
 }
 
-module.exports = { Logger };
+export default Logger;

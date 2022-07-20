@@ -1,8 +1,16 @@
 {
   "dependencies": {
+    "@types/colors": "^1.2.1",
+    "@types/events": "^3.0.0",
+    "@types/moment": "^2.13.0",
+    "@types/ws": "^8.5.3",
     "colors": "^1.4.0",
     "moment": "^2.29.4",
     "node-fetch": "^2.6.7",
     "ws": "^7.5.9"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "start": "node index.js"
   }
 }
