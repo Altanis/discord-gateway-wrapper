@@ -1,7 +1,11 @@
-const WebSocket = require('ws');
+import WebSocket from 'ws';
 
-const DiscordSocket = class extends WebSocket {
-    constructor(url, protocol) {
+class DiscordSocket extends WebSocket {
+    ready: boolean;
+    reconnect: boolean;
+    _send: Function;
+
+    constructor(url: string, protocol?: Array<string | null>) {
         super(url, protocol);
 
         this.ready = false;
@@ -20,4 +24,4 @@ const DiscordSocket = class extends WebSocket {
     }
 }
 
-module.exports = { DiscordSocket };
+export default DiscordSocket;

@@ -1,10 +1,24 @@
-const { DiscordSocket } = require('./Helpers/DiscordSocket');
-const  { GatewayErrorHandler } = require('./helpers/GatewayErrorHandler');
-const { GATEWAY_URI, INCOMING_PACKETS, OUTGOING_PACKETS } = require('./helpers/Packet');
-const { Logger } = require('../Util/Log');
+import DiscordSocket from "./helpers/DiscordSocket";
+import GatewayErrorHandler from "./helpers/GatewayErrorHandler";
+import { GATEWAY_URI, INCOMING_PACKETS, OUTGOING_PACKETS } from '../types/enums/Packets';
+import Logger from '../Util/Log';
+import { EventEmitter } from 'events';
+import ClientOptions from "../types/interfaces/client/ClientOptions";
+import ClientSocketOptions from "../types/interfaces/client/ClientSocketOptions";
+import UserObject from "../types/interfaces/user/UserObject";
+import GuildManager from "../types/managers/GuildManager";
 
-const WebSocketClient = class {
-    constructor(options) {
+class Client extends EventEmitter {
+    options: ClientOptions;
+    token: string;
+    ws: ClientSocketOptions;
+    user: UserObject | {};
+    guilds: Map<string, typeof GuildManager>;
+    private _Logger: Logger;
+
+    constructor(options: ClientOptions) {
+        super();
+
         this.options = options;
         this.token = options.token;
         this.ws = {
@@ -13,14 +27,18 @@ const WebSocketClient = class {
                 ping: null,
                 interval: null,
                 sequence: null,
-                socketID: null,
-            }
-        }
+                sessionID: null,
+            },
+            version: null,
+        };
+
+        this.user = {};
+        this.guilds = new Map();
 
         this._Logger = new Logger(this.options?.debug || false);
     }
 
-    _onmessage(message) {
+    _onmessage(message: any) {
         console.log(message);
 
         const { t: event, s: sequence, d: data, op: header } = message;
@@ -28,9 +46,10 @@ const WebSocketClient = class {
 
         switch (header) {
             case INCOMING_PACKETS.EVENT_DISPATCH: { // Events such as READY and GUILD_CREATE are dispatched here.
+                require(`./helpers/events/${event}`)(this, event, data);
                 break;
             }
-            case INCOMING_PACKETS.READY: {
+            case INCOMING_PACKETS.HELLO: {
                 const { heartbeat_interval } = data;
                 this.ws.heartbeat.interval = heartbeat_interval * Math.random();
                 
@@ -42,7 +61,6 @@ const WebSocketClient = class {
                     op: OUTGOING_PACKETS.AUTHORIZE,
                     d: {
                         token: this.token,
-                        capabilities: 509,
                         properties: {
                             os: 'temple',
                             browser: 'ecosia',
@@ -55,19 +73,19 @@ const WebSocketClient = class {
         }
     }
 
-    _onerror(message) {
+    _onerror(message: string) {
         this.ws.socket.ready ?
             this._Logger.warn(`Error during socket connection: ${message}.`)
             :
             this._Logger.severe(`Error during socket connection: ${message}.`);
     }
 
-    _onclose(opcode) {
+    _onclose(opcode: number) {
         this._Logger.warn(`Error code ${opcode} thrown on SOCKET_CLOSE event. Reason: ${GatewayErrorHandler(opcode)}.`);
         this._reconnect();
     }
 
-    _reconnect(reason) {
+    _reconnect() {
         this._Logger.warn('Reconnecting with Discord API...');
         this.login(true);
     }
@@ -79,12 +97,12 @@ const WebSocketClient = class {
         this.ws.socket.on('open', () => {
             this.ws.socket.ready = true;
 
-            if (this.ws.socket.reconnect && this.ws.socket.sessionID) {
+            if (this.ws.socket.reconnect && this.ws.heartbeat.sessionID) {
                 this.ws.socket.send({
                     op: OUTGOING_PACKETS.RESUME_CONNECTION,
                     d: {
                         token: this.token,
-                        session_id: this.ws.socket.sessionID,
+                        session_id: this.ws.heartbeat.sessionID,
                         seq: this.ws.heartbeat.sequence,
                     }
                 })
@@ -92,11 +110,11 @@ const WebSocketClient = class {
 
             this._Logger.debug('Opened WebSocket with Discord API.');
 
-            this.ws.socket.on('decodedMessage', msg => this._onmessage(msg));
-            this.ws.socket.on('close', close => this._onclose(close));
-            this.ws.socket.on('error', error => this._onerror(error));
+            this.ws.socket.on('decodedMessage', (msg: MessageEvent) => this._onmessage(msg));
+            this.ws.socket.on('close', (close: number) => this._onclose(close));
+            this.ws.socket.on('error', (error: string) => this._onerror(error));
         });
     }
 }
 
-module.exports = { WebSocketClient };
+module.exports = { Client };
