@@ -5,8 +5,8 @@ class DiscordSocket extends WebSocket {
     reconnect: boolean;
     _send: Function;
 
-    constructor(url: string, protocol?: Array<string | null>) {
-        super(url, protocol);
+    constructor(url: string) {
+        super(url);
 
         this.ready = false;
         this.reconnect = false;

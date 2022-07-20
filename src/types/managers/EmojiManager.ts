@@ -2,7 +2,7 @@ import EmojiObject from "../interfaces/guild/EmojiObject";
 import UserObject from "../interfaces/user/UserObject";
 
 class EmojiManager {
-    id: string | null;
+    id: string;
     name: string | null;
     roles: Array<string> | null;
     createdBy: UserObject | null;
@@ -13,11 +13,11 @@ class EmojiManager {
     constructor(emoji: EmojiObject) {
         this.id = emoji.id;
         this.name = emoji.name;
-        this.roles = emoji.roles;
-        this.createdBy = emoji.user;
-        this.managed = emoji.managed;
-        this.animated = emoji.animated;
-        this.available = emoji.available;
+        this.roles = emoji.roles || null;
+        this.createdBy = emoji.user || null;
+        this.managed = emoji.managed || null;
+        this.animated = emoji.animated || null;
+        this.available = emoji.available || null;
     }
 }
 

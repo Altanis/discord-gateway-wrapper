@@ -1,7 +1,7 @@
 import UserObject from "../user/UserObject";
 
 interface EmojiObject {
-    id: string | null;
+    id: string;
     name: string | null; 
     roles?: Array<string>;
     user?: UserObject;

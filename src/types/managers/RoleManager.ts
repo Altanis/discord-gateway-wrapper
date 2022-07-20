@@ -17,7 +17,7 @@ class RoleManager {
         this.color = role.color;
         this.hoisted = role.hoist;
         this.icon = {
-            hash: role.icon,
+            hash: role.icon || null,
             url: role.icon ? `https://discord.com/assets/${role.icon}.svg` : null,
         };
         this.position = role.position;

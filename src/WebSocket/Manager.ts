@@ -13,7 +13,7 @@ class Client extends EventEmitter {
     token: string;
     ws: ClientSocketOptions;
     user: UserObject | {};
-    guilds: Map<string, typeof GuildManager>;
+    guilds: Map<string, GuildManager>;
     private _Logger: Logger;
 
     constructor(options: ClientOptions) {
@@ -39,14 +39,16 @@ class Client extends EventEmitter {
     }
 
     _onmessage(message: any) {
-        console.log(message);
-
+        if (!this.ws.socket) return;
+        
         const { t: event, s: sequence, d: data, op: header } = message;
         this.ws.heartbeat.sequence = sequence;
 
         switch (header) {
             case INCOMING_PACKETS.EVENT_DISPATCH: { // Events such as READY and GUILD_CREATE are dispatched here.
-                require(`./helpers/events/${event}`)(this, event, data);
+                import(`./helpers/events/${event}`).then(EventHandler => {
+                    EventHandler.default(this, data);
+                });
                 break;
             }
             case INCOMING_PACKETS.HELLO: {
@@ -54,7 +56,7 @@ class Client extends EventEmitter {
                 this.ws.heartbeat.interval = heartbeat_interval * Math.random();
                 
                 setInterval(() => {
-                    this.ws.socket.send({ op: OUTGOING_PACKETS.HEARTBEAT_SEND, s: this.ws.heartbeat.sequence, });
+                    this.ws.socket?.send({ op: OUTGOING_PACKETS.HEARTBEAT_SEND, s: this.ws.heartbeat.sequence, });
                 }, this.ws.heartbeat.interval || (45000 * Math.random()));
 
                 this.ws.socket.send({
@@ -74,6 +76,8 @@ class Client extends EventEmitter {
     }
 
     _onerror(message: string) {
+        if (!this.ws.socket) return;
+
         this.ws.socket.ready ?
             this._Logger.warn(`Error during socket connection: ${message}.`)
             :
@@ -81,8 +85,14 @@ class Client extends EventEmitter {
     }
 
     _onclose(opcode: number) {
-        this._Logger.warn(`Error code ${opcode} thrown on SOCKET_CLOSE event. Reason: ${GatewayErrorHandler(opcode)}.`);
-        this._reconnect();
+        const [retry, reason] = GatewayErrorHandler(opcode);
+
+        if (retry) {
+            this._Logger.warn(`Error code ${opcode} thrown on SOCKET_CLOSE event. Reason: ${reason}.`);
+            this._reconnect();
+        } else {
+            this._Logger.severe(`Error code ${opcode} was thrown on SOCKET_CLOSE event. Reason: ${reason}.`);
+        }
     }
 
     _reconnect() {
@@ -95,6 +105,8 @@ class Client extends EventEmitter {
         this.ws.socket.reconnect = reconnect;
 
         this.ws.socket.on('open', () => {
+            if (!this.ws.socket) return;
+
             this.ws.socket.ready = true;
 
             if (this.ws.socket.reconnect && this.ws.heartbeat.sessionID) {

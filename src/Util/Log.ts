@@ -1,5 +1,7 @@
-import { Color } from "../../node_modules/colors/index";
-import moment from "../../node_modules/moment/ts3.1-typings/moment";
+import colors from 'colors';
+import moment from 'moment';
+
+colors;
 
 class Logger {
     isDebug: boolean;

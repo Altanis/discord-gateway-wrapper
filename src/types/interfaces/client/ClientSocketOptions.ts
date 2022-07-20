@@ -1,14 +1,14 @@
 import DiscordSocket from '../../../WebSocket/helpers/DiscordSocket';
 
 interface ClientSocketOptions {
-    socket: DiscordSocket;
+    socket: DiscordSocket | null;
     heartbeat: {
-        ping: number;
-        interval: number;
-        sequence: number;
-        sessionID: string;
+        ping: number | null;
+        interval: number | null;
+        sequence: number | null;
+        sessionID: string | null;
     };
-    version: number;
+    version: number | null;
 }
 
 export default ClientSocketOptions;

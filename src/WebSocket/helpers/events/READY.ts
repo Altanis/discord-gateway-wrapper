@@ -3,7 +3,7 @@ import ReadyPayload from "../../../types/interfaces/events/READY";
 import GuildManager from "../../../types/managers/GuildManager";
 
 export default (manager: ClientObject, data: ReadyPayload) => {
-    const { v: version, user, guilds, session_id: sessionID, shard: [id, amount], application } = data;
+    const { v: version, user, guilds, session_id: sessionID, shard, application } = data;
 
     manager.ws.version = version; 
     manager.user = user;
@@ -13,7 +13,7 @@ export default (manager: ClientObject, data: ReadyPayload) => {
     });
 
     manager.ws.heartbeat.sessionID = sessionID;
-    if (amount) manager._Logger.debug(`Connected to shard ${id}/${amount}.`);
+    if (shard && shard[0] && shard[1]) manager._Logger.debug(`Connected to shard ${shard[0]}/${shard[1]}.`);
     manager.application = application;  
 
     manager.emit('ready');
