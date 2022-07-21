@@ -21,8 +21,10 @@ client.on('ready', function() { // Emits the ready event when the Discord API gi
 
 ## Updates to Come
 ### More Structures
+
 [ ] Some crucial structures, like Member and Channel have not been implemented yet.
 [x] For Client ease, Map will be replaced with an extension, Cluster. This will have methods such as .first and .find.
+
 ### HTTP Requests
 <p>The client communicates to the Discord API via a REST HTTP Protocol. There are specific endpoints for doing specific actions (such as sending messages, creating channels, etc.)<br>
 As of right now, there are no HTTP requests implemented in this wrapper. After creating some crucial structures, HTTP Requests will be worked on.
