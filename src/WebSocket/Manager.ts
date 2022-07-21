@@ -2,14 +2,15 @@ import DiscordSocket from "./helpers/DiscordSocket";
 import GatewayErrorHandler from "./helpers/GatewayErrorHandler";
 import { GATEWAY_URI, INCOMING_PACKETS, OUTGOING_PACKETS } from '../types/enums/Packets';
 import Logger from '../Util/Log';
-import { EventEmitter } from 'events';
+import { TypedEmitter } from 'tiny-typed-emitter';
 import ClientOptions from "../types/interfaces/client/ClientOptions";
 import ClientSocketOptions from "../types/interfaces/client/ClientSocketOptions";
 import UserObject from "../types/interfaces/user/UserObject";
 import GuildManager from "../types/managers/GuildManager";
 import Cluster from "../types/structs/Cluster";
+import ClientEvents from "../types/interfaces/client/ClientEvents";
 
-class Client extends EventEmitter {
+class Client extends TypedEmitter<ClientEvents> {
     options: ClientOptions;
     token: string;
     ws: ClientSocketOptions;
@@ -39,7 +40,7 @@ class Client extends EventEmitter {
         this._Logger = new Logger(this.options?.debug || false);
     }
 
-    _onmessage(message: any) {
+    private _onmessage(message: any) {
         if (!this.ws.socket) return;
         
         const { t: event, s: sequence, d: data, op: header } = message;
@@ -76,7 +77,7 @@ class Client extends EventEmitter {
         }
     }
 
-    _onerror(message: string) {
+    private _onerror(message: string) {
         if (!this.ws.socket) return;
 
         this.ws.socket.ready ?
@@ -85,18 +86,18 @@ class Client extends EventEmitter {
             this._Logger.severe(`Error during socket connection: ${message}.`);
     }
 
-    _onclose(opcode: number) {
+    private _onclose(opcode: number) {
         const [retry, reason] = GatewayErrorHandler(opcode);
 
         if (retry) {
-            this._Logger.warn(`Error code ${opcode} thrown on SOCKET_CLOSE event. Reason: ${reason}.`);
+            this._Logger.warn(`Error code ${opcode} thrown on SOCKET_CLOSE event. Reason: ${reason}`);
             this._reconnect();
         } else {
-            this._Logger.severe(`Error code ${opcode} was thrown on SOCKET_CLOSE event. Reason: ${reason}.`);
+            this._Logger.severe(`Error code ${opcode} was thrown on SOCKET_CLOSE event. Reason: ${reason}`);
         }
     }
 
-    _reconnect() {
+    private _reconnect() {
         this._Logger.warn('Reconnecting with Discord API...');
         this.login(true);
     }
@@ -130,4 +131,11 @@ class Client extends EventEmitter {
     }
 }
 
-module.exports = { Client };
+declare module 'node:events' {
+    class EventEmitter {
+        public static once<K extends keyof ClientEvents>(eventEmitter: Client, eventName: K): Promise<ClientEvents[K]>;
+        public static on<K extends keyof ClientEvents>(eventEmitter: Client, eventName: K): AsyncIterator<ClientEvents[K]>;
+    }
+}  
+
+export { Client };
