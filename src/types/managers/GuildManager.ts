@@ -14,7 +14,7 @@ class GuildManager {
         this.id = guild.id;
         this.name = guild.name;
         this.ownerID = guild.owner_id;
-        // this.owner = new UserManager(this.ownerID); << Implement later
+        // this.owner = RESTManager.users.cache.get(guild.owner_id);
         this.roles = new Cluster();
         this.emojis = new Cluster();
 
