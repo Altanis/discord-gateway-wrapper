@@ -7,13 +7,14 @@ import ClientOptions from "../types/interfaces/client/ClientOptions";
 import ClientSocketOptions from "../types/interfaces/client/ClientSocketOptions";
 import UserObject from "../types/interfaces/user/UserObject";
 import GuildManager from "../types/managers/GuildManager";
+import Cluster from "../types/structs/Cluster";
 
 class Client extends EventEmitter {
     options: ClientOptions;
     token: string;
     ws: ClientSocketOptions;
     user: UserObject | {};
-    guilds: Map<string, GuildManager>;
+    guilds: Cluster<string, GuildManager>;
     private _Logger: Logger;
 
     constructor(options: ClientOptions) {
@@ -33,7 +34,7 @@ class Client extends EventEmitter {
         };
 
         this.user = {};
-        this.guilds = new Map();
+        this.guilds = new Cluster();
 
         this._Logger = new Logger(this.options?.debug || false);
     }

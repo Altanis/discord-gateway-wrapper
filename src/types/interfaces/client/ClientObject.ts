@@ -4,6 +4,7 @@ import ClientSocketOptions from './ClientSocketOptions';
 import ApplicationObject from './ApplicationObject';
 import GuildManager from '../../managers/GuildManager';
 import Logger from '../../../Util/Log';
+import Cluster from '../../structs/Cluster';
 
 /// <reference path="./typings/node/node.d.ts" />
 import { EventEmitter } from 'events';
@@ -13,7 +14,7 @@ interface ClientObject extends EventEmitter {
     token: string;
     ws: ClientSocketOptions;
     user: UserObject;
-    guilds: Map<string, GuildManager>;
+    guilds: Cluster<string, GuildManager>;
     _Logger: Logger;
     application: ApplicationObject;
 }
