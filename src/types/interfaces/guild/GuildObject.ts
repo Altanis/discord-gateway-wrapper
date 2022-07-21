@@ -1,0 +1,50 @@
+import RoleObject from './RoleObject';
+import EmojiObject from './EmojiObject';
+import WelcomeScreenObject from './WelcomeScreenObject';
+import GuildFeaturesObject from './GuildFeaturesObject';
+import StickerObject from './StickerObject';
+
+interface GuildObject {
+    id: string;
+    name: string;
+    icon: string | null;
+    icon_hash?: string | null;
+    splash: string | null;
+    discovery_splash: string | null;
+    owner?: boolean;
+    owner_id: string;
+    permissions?: string;
+    afk_channel_id: string | null;
+    afk_timeout: number;
+    widget_enabled?: boolean;
+    widget_channel_id?: string | null;
+    verification_level: number;
+    default_message_notifications: number;
+    explicit_content_filter: number;
+    roles: Array<RoleObject>;
+    emojis: Array<EmojiObject>;
+    features: Array<GuildFeaturesObject>;
+    mfa_level: number;
+    application_id: string | null;
+    system_channel_id: string | null;
+    system_channel_flags: number;
+    rules_channel_id: string;
+    max_presences?: number;
+    max_members?: number;
+    vanity_url_code: string | null;
+    description: string | null;
+    banner: string | null;
+    premium_tier: number;
+    premium_subscription_count?: number;
+    preferred_locale: string;
+    public_updates_channel_id: string | null;
+    new_video_channel_users?: number;
+    approximate_member_count?: number;
+    approximate_presence_count?: number;
+    welcome_screen?: WelcomeScreenObject;
+    nsfw_level: number;
+    stickers?: Array<StickerObject>;
+    premium_progress_bar_enabled: boolean;
+}
+
+export default GuildObject;
