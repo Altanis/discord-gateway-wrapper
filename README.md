@@ -1,6 +1,7 @@
 # Discord Gateway Wrapper
 
 _This wrapper is being made solely out of my boredom. Feel free to use it, however I have no 100% guarantee to maintain this project._
+**This commit is unfinished and has errors. Please do not use this as of right now.**
 
 
 <p>This is currently <b>not</b> an NPM package, so you must manually clone this to your desktop and manually compile the TypeScript files.<br>

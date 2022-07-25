@@ -1,20 +1,20 @@
 import DiscordSocket from "./helpers/DiscordSocket";
 import GatewayErrorHandler from "./helpers/GatewayErrorHandler";
-import { GATEWAY_URI, INCOMING_PACKETS, OUTGOING_PACKETS } from '../types/enums/Packets';
+import { GATEWAY_URI, INCOMING_PACKETS, OUTGOING_PACKETS } from '../typings/enums/Packets';
 import Logger from '../Util/Log';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import ClientOptions from "../types/interfaces/client/ClientOptions";
-import ClientSocketOptions from "../types/interfaces/client/ClientSocketOptions";
-import UserObject from "../types/interfaces/user/UserObject";
-import GuildManager from "../types/managers/GuildManager";
-import Cluster from "../types/structs/Cluster";
-import ClientEvents from "../types/interfaces/client/ClientEvents";
+import ClientOptions from "../typings/interfaces/client/ClientOptions";
+import ClientSocketOptions from "../typings/interfaces/client/ClientSocketOptions";
+import GuildManager from "../typings/managers/GuildManager";
+import Cluster from "../typings/structs/Cluster";
+import ClientEvents from "../typings/interfaces/client/ClientEvents";
+import UserManager from "../typings/managers/UserManager";
 
 class Client extends TypedEmitter<ClientEvents> {
     options: ClientOptions;
     token: string;
     ws: ClientSocketOptions;
-    user: UserObject | {};
+    user: UserManager | {};
     guilds: Cluster<string, GuildManager>;
     private _Logger: Logger;
 
@@ -130,12 +130,5 @@ class Client extends TypedEmitter<ClientEvents> {
         });
     }
 }
-
-declare module 'node:events' {
-    class EventEmitter {
-        public static once<K extends keyof ClientEvents>(eventEmitter: Client, eventName: K): Promise<ClientEvents[K]>;
-        public static on<K extends keyof ClientEvents>(eventEmitter: Client, eventName: K): AsyncIterator<ClientEvents[K]>;
-    }
-}  
 
 export { Client };

@@ -43,4 +43,4 @@ enum Notifications {
     SuppressJoinStickerNotifications = 1 << 3,
 }
 
-export default { ContentFilterLevel, MFALevel, VerificationLevel, NSFWLevel, PremiumTier, Notifications };
+export default { MessageNotificationLevel, ContentFilterLevel, MFALevel, VerificationLevel, NSFWLevel, PremiumTier, Notifications };

@@ -1,12 +1,13 @@
-import ClientObject from "../../../types/interfaces/client/ClientObject";
-import ReadyPayload from "../../../types/interfaces/events/READY";
-import GuildManager from "../../../types/managers/GuildManager";
+import ClientObject from "../../../typings/interfaces/client/ClientObject";
+import ReadyPayload from "../../../typings/interfaces/events/READY";
+import GuildManager from "../../../typings/managers/GuildManager";
+import UserManager from "../../../typings/managers/UserManager";
 
 export default (manager: ClientObject, data: ReadyPayload) => {
     const { v: version, user, guilds, session_id: sessionID, shard, application } = data;
 
     manager.ws.version = version; 
-    manager.user = user;
+    manager.user = new UserManager(user);
 
     guilds.forEach(guild => {
         manager.guilds.set(guild.id, new GuildManager(guild));

@@ -11,7 +11,7 @@ class ChannelManager {
     constructor(channel: ChannelObject) {
         this.id = channel.id;
         this.type = ChannelType[channel.type]; 
-        // this.guild = RESTManager.guilds.cache.get(channel.guild_id);
+        // this.guild = RESTManager.cache.guilds.get(channel.guild_id);
         this.name = channel.name || null;
         this.topic = channel.topic || null;
         this.nsfw = channel.nsfw || null;

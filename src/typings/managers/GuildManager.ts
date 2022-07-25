@@ -8,7 +8,7 @@ class GuildManager {
     name: string;
     ownerID: string;
     roles: Cluster<string, RoleManager>;
-    emojis: Cluster<string, EmojiManager>
+    emojis: Cluster<string, EmojiManager>;
 
     constructor(guild: GuildObject) {
         this.id = guild.id;
